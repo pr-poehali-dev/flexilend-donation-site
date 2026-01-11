@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
+import MinecraftBackground from '@/components/MinecraftBackground';
 
 const Donate = () => {
   const navigate = useNavigate();
@@ -38,7 +39,8 @@ const Donate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/80 relative">
+      <MinecraftBackground />
       <div className="container mx-auto px-4 py-8">
         <Button
           variant="ghost"

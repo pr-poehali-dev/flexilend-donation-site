@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
+import MinecraftBackground from '@/components/MinecraftBackground';
 
 interface Transaction {
   id: string;
@@ -75,7 +76,8 @@ const History = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/80 relative">
+      <MinecraftBackground />
       <div className="container mx-auto px-4 py-8">
         <Button
           variant="ghost"

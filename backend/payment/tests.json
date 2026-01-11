@@ -1,0 +1,60 @@
+{
+  "tests": [
+    {
+      "name": "Create payment with valid data",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "create_payment",
+        "nickname": "Steve123",
+        "package_id": "premium",
+        "mode": "survival",
+        "amount": 299
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "order_id": "string",
+        "payment_url": "string",
+        "amount": 299,
+        "final_amount": 299
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create payment with promo code",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "create_payment",
+        "nickname": "Alex456",
+        "package_id": "vip",
+        "mode": "anarchy",
+        "amount": 599,
+        "promo": "FIRST10"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "discount": 59,
+        "final_amount": 540
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Check payment status",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "check_payment",
+        "order_id": "test-order-123"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "status": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

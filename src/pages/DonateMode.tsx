@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
+import MinecraftBackground from '@/components/MinecraftBackground';
 
 interface DonatePackage {
   id: string;
@@ -23,6 +24,7 @@ const DonateMode = () => {
   const [nickname, setNickname] = useState('');
   const [promo, setPromo] = useState('');
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const modeNames: Record<string, string> = {
     survival: 'Выживание',
@@ -52,7 +54,7 @@ const DonateMode = () => {
     }
   ];
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     if (!nickname) {
       toast({
         title: 'Ошибка',
@@ -71,15 +73,64 @@ const DonateMode = () => {
       return;
     }
 
+    setIsProcessing(true);
     const pkg = packages.find(p => p.id === selectedPackage);
-    toast({
-      title: 'Переход к оплате',
-      description: `${pkg?.name} - ${pkg?.price}₽ для ${nickname}`,
-    });
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/8569c347-d4d6-41b0-995b-9f9a0075e605', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'create_payment',
+          nickname: nickname,
+          package_id: selectedPackage,
+          mode: mode || 'survival',
+          amount: pkg?.price || 0,
+          promo: promo
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        if (data.discount > 0) {
+          toast({
+            title: 'Промокод применён!',
+            description: `Скидка ${data.discount}₽. Итого: ${data.final_amount}₽`,
+          });
+        }
+        
+        toast({
+          title: 'Переход к оплате',
+          description: `Заказ #${data.order_id.slice(0, 8)}`,
+        });
+        
+        setTimeout(() => {
+          window.open(data.payment_url, '_blank');
+        }, 1000);
+      } else {
+        toast({
+          title: 'Ошибка',
+          description: data.error || 'Не удалось создать платёж',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось связаться с сервером',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/80 relative">
+      <MinecraftBackground />
       <div className="container mx-auto px-4 py-8">
         <Button
           variant="ghost"
@@ -189,10 +240,30 @@ const DonateMode = () => {
               className="w-full text-lg py-6 minecraft-shadow"
               size="lg"
               onClick={handlePurchase}
+              disabled={isProcessing}
             >
-              <Icon name="CreditCard" size={24} className="mr-2" />
-              Перейти к оплате
+              {isProcessing ? (
+                <>
+                  <Icon name="Loader2" size={24} className="mr-2 animate-spin" />
+                  Обработка...
+                </>
+              ) : (
+                <>
+                  <Icon name="CreditCard" size={24} className="mr-2" />
+                  Перейти к оплате
+                </>
+              )}
             </Button>
+            
+            <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+              <p className="text-sm text-muted-foreground text-center">
+                <Icon name="Lock" size={14} className="inline mr-1" />
+                Безопасная оплата через защищённое соединение
+              </p>
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Доступные промокоды: <strong>FIRST10</strong> (10% скидка), <strong>SALE20</strong> (20% скидка)
+              </p>
+            </div>
           </div>
         </Card>
       </div>
