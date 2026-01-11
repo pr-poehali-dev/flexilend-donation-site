@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "Send webhook notification",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "notify_server",
+        "player_nickname": "Steve123",
+        "server_mode": "survival",
+        "package_name": "premium",
+        "webhook_url": "http://example.com/webhook",
+        "secret_key": "test_secret"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": false
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

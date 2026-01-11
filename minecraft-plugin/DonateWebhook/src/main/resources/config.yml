@@ -1,0 +1,16 @@
+# Конфигурация DonateWebhook
+
+webhook:
+  # Порт для приема webhook (откройте его в файрволе!)
+  port: 8080
+  
+  # Секретный ключ для проверки подписи (должен совпадать с сайтом)
+  secret: "your-secret-key-here"
+
+# Уведомления
+notifications:
+  # Уведомлять администраторов о донатах
+  notify_admins: true
+  
+  # Логировать в консоль
+  log_to_console: true

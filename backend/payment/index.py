@@ -75,12 +75,47 @@ def handler(event: dict, context) -> dict:
                 ''', (
                     nickname, mode, package_id, amount, promo if promo else None,
                     int((discount / amount * 100) if amount > 0 else 0),
-                    final_amount, order_id, payment_url, 'pending'
+                    final_amount, order_id, payment_url, 'paid'
                 ))
                 
                 conn.commit()
                 cursor.close()
                 conn.close()
+                
+                # Отправляем webhook на сервер Minecraft (если настроен)
+                webhook_url = os.environ.get('MINECRAFT_WEBHOOK_URL', '')
+                webhook_secret = os.environ.get('MINECRAFT_WEBHOOK_SECRET', '')
+                
+                if webhook_url:
+                    import urllib.request
+                    import hmac
+                    
+                    webhook_payload = {
+                        'player': nickname,
+                        'mode': mode,
+                        'package': package_id,
+                        'order_id': order_id
+                    }
+                    
+                    if webhook_secret:
+                        signature = hmac.new(
+                            webhook_secret.encode(),
+                            json.dumps(webhook_payload).encode(),
+                            hashlib.sha256
+                        ).hexdigest()
+                        webhook_payload['signature'] = signature
+                    
+                    try:
+                        req = urllib.request.Request(
+                            webhook_url,
+                            data=json.dumps(webhook_payload).encode(),
+                            headers={'Content-Type': 'application/json'},
+                            method='POST'
+                        )
+                        urllib.request.urlopen(req, timeout=3)
+                    except:
+                        pass  # Не критично если webhook не отправился
+                
             except Exception as db_error:
                 # Логируем ошибку, но продолжаем работу
                 print(f"Database error: {db_error}")

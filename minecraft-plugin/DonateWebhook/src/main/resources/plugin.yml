@@ -1,0 +1,12 @@
+name: DonateWebhook
+version: 1.0
+main: ru.flexilend.donate.DonateWebhook
+api-version: 1.21
+author: FlexiLend
+description: Webhook плагин для мгновенной выдачи донатов
+depend: [LuckPerms]
+
+permissions:
+  donate.admin:
+    description: Получать уведомления о донатах
+    default: op
