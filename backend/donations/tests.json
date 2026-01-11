@@ -1,0 +1,27 @@
+{
+  "tests": [
+    {
+      "name": "Get pending donations - unauthorized",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "Unauthorized"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get pending donations - authorized",
+      "method": "GET",
+      "path": "/",
+      "headers": {
+        "X-Api-Key": "your-secret-key-here"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "donations": []
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

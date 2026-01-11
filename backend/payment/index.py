@@ -3,6 +3,7 @@ import os
 import hashlib
 import uuid
 from datetime import datetime
+import psycopg2
 
 def handler(event: dict, context) -> dict:
     '''
@@ -59,6 +60,30 @@ def handler(event: dict, context) -> dict:
             
             order_id = str(uuid.uuid4())
             payment_url = f"https://pay.flexilend.ru/checkout/{order_id}"
+            
+            # Сохраняем донат в базу данных
+            try:
+                dsn = os.environ.get('DATABASE_URL')
+                conn = psycopg2.connect(dsn)
+                cursor = conn.cursor()
+                
+                cursor.execute('''
+                    INSERT INTO donations 
+                    (player_nickname, server_mode, package_name, amount, promo_code, 
+                     discount_percent, final_amount, payment_id, payment_url, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ''', (
+                    nickname, mode, package_id, amount, promo if promo else None,
+                    int((discount / amount * 100) if amount > 0 else 0),
+                    final_amount, order_id, payment_url, 'pending'
+                ))
+                
+                conn.commit()
+                cursor.close()
+                conn.close()
+            except Exception as db_error:
+                # Логируем ошибку, но продолжаем работу
+                print(f"Database error: {db_error}")
             
             return {
                 'statusCode': 200,

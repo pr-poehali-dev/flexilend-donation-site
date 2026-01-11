@@ -1,0 +1,97 @@
+# Конфигурация StrictDonate для подключения к сайту
+# Инструкция: https://docs.strictdonate.ru/
+
+# Настройки API
+api:
+  # URL для проверки новых донатов
+  check_url: "https://functions.poehali.dev/8b768f92-7f9e-45da-8303-add7aee9d051"
+  
+  # URL для отметки выданных донатов
+  confirm_url: "https://functions.poehali.dev/8b768f92-7f9e-45da-8303-add7aee9d051"
+  
+  # API ключ (получите в настройках проекта)
+  api_key: "ВАШ_API_КЛЮЧ_ЗДЕСЬ"
+  
+  # Интервал проверки новых донатов (в секундах)
+  check_interval: 30
+  
+  # Метод авторизации
+  auth_header: "X-Api-Key"
+
+# Настройки донат-пакетов
+packages:
+  # Survival режим
+  survival:
+    beginner:
+      # Команды для выдачи привилегий через LuckPerms
+      commands:
+        - "lp user {player} parent add beginner"
+        - "lp user {player} permission set essentials.kit.beginner true"
+      # Сообщение игроку
+      message: "&aВы получили донат-пакет &eНовичок&a!"
+    
+    premium:
+      commands:
+        - "lp user {player} parent add premium"
+        - "lp user {player} permission set essentials.kit.premium true"
+        - "lp user {player} permission set essentials.fly true"
+      message: "&aВы получили донат-пакет &6Премиум&a!"
+    
+    vip:
+      commands:
+        - "lp user {player} parent add vip"
+        - "lp user {player} permission set essentials.kit.vip true"
+        - "lp user {player} permission set essentials.fly true"
+        - "lp user {player} permission set essentials.god true"
+      message: "&aВы получили донат-пакет &bVIP&a!"
+    
+    legend:
+      commands:
+        - "lp user {player} parent add legend"
+        - "lp user {player} permission set essentials.kit.legend true"
+        - "lp user {player} permission set essentials.fly true"
+        - "lp user {player} permission set essentials.god true"
+        - "lp user {player} permission set worldedit.* true"
+      message: "&aВы получили донат-пакет &5Легенда&a!"
+  
+  # Anarchy режим
+  anarchy:
+    anarchist:
+      commands:
+        - "lp user {player} parent add anarchist"
+        - "lp user {player} permission set essentials.kit.anarchist true"
+      message: "&cВы получили донат-пакет &4Анархист&c!"
+    
+    warlord:
+      commands:
+        - "lp user {player} parent add warlord"
+        - "lp user {player} permission set essentials.kit.warlord true"
+        - "lp user {player} permission set essentials.fly true"
+      message: "&cВы получили донат-пакет &6Военачальник&c!"
+    
+    chaos:
+      commands:
+        - "lp user {player} parent add chaos"
+        - "lp user {player} permission set essentials.kit.chaos true"
+        - "lp user {player} permission set essentials.fly true"
+        - "lp user {player} permission set essentials.god true"
+      message: "&cВы получили донат-пакет &5Хаос&c!"
+
+# Настройки уведомлений
+notifications:
+  # Уведомлять администраторов о новых донатах
+  notify_admins: true
+  
+  # Логировать все операции в консоль
+  debug_mode: true
+  
+  # Сообщение администраторам
+  admin_message: "&7[&6Донат&7] &aИгрок &e{player} &aполучил пакет &6{package}&a на режиме &b{mode}&a!"
+
+# Настройки безопасности
+security:
+  # Проверять SSL сертификаты
+  verify_ssl: true
+  
+  # Таймаут запросов (в секундах)
+  request_timeout: 10
